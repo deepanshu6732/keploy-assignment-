@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { IntroAnimation } from "@/components/IntroAnimation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <body className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 flex flex-col">
+        <Script
+          id="keploy-intro-check"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(sessionStorage.getItem('keploy_intro_seen')==='true'){document.documentElement.classList.add('intro-seen');}}catch(e){}})();`,
+          }}
+        />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <IntroAnimation />
           <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur">
             <div className="container mx-auto max-w-4xl px-4 flex h-16 items-center justify-between">
               <div className="flex items-center gap-2 font-bold text-xl tracking-tight">

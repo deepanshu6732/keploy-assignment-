@@ -294,3 +294,43 @@ main.prose {
     width: 100%;
   }
 }
+
+/* Intro Animation Overlay Styles */
+html.intro-seen #keploy-intro-overlay {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #keploy-intro-overlay {
+    display: none !important;
+  }
+}
+
+@keyframes intro-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes intro-pulse-ring {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.65;
+  }
+}
+
+.intro-logo-float {
+  animation: intro-float 3.2s ease-in-out infinite;
+}
+
+.intro-halo {
+  animation: intro-pulse-ring 2.6s ease-in-out infinite;
+}
+
