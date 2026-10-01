@@ -1,4 +1,5 @@
 import { Callout } from '@/components/Callout';
+import { ScrollLink } from '@/components/ScrollLink';
 
 export const metadata = {
   title: 'Keploy Go Quickstart',
@@ -14,8 +15,8 @@ export const metadata = {
         no endless mock setup, and no guesswork about whether your API still behaves the way users expect.
       </div>
       <div className="cta-row">
-        <a href="#1-prerequisites" className="primary-cta">Start the setup</a>
-        <a href="#5-why-keploy" className="secondary-cta">Why teams use it</a>
+        <ScrollLink targetId="1-prerequisites" className="primary-cta">Start the setup</ScrollLink>
+        <ScrollLink targetId="5-why-keploy" className="secondary-cta">Why teams use it</ScrollLink>
       </div>
       <div className="mini-metrics">
         <div className="metric-item">
@@ -67,7 +68,7 @@ export const metadata = {
 
 ---
 
-## 1. Prerequisites
+<h2 id="1-prerequisites">1. Prerequisites</h2>
 
 Before we get started, make sure your environment is ready:
 
@@ -166,7 +167,7 @@ Keploy launches your app, replays the exact traffic it captured earlier, and com
 
 ---
 
-## 5. Why Keploy?
+<h2 id="5-why-keploy">5. Why Keploy?</h2>
 
 If you’ve built Go APIs before, you know the cost of manual test setup: boilerplate table-driven cases, flaky stubs, and Docker-heavy integration loops.
 
