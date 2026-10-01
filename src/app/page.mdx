@@ -1,0 +1,128 @@
+import { Callout } from '@/components/Callout';
+
+export const metadata = {
+  title: 'Keploy Go Quickstart',
+}
+
+# Keploy Go Quickstart: Zero-Code API Testing
+
+Welcome to the definitive guide on testing Go APIs using **Keploy**. Keploy is a unique e2e testing tool that captures API interactions and generates tests along with mocks, completely without writing test cases by hand.
+
+In this tutorial, you'll learn how to seamlessly integrate Keploy into a Go application. We'll be using a simple HTTP server to demonstrate how Keploy intercepts traffic, records it, and later replays it to ensure your endpoints work as expected.
+
+---
+
+## 1. Prerequisites
+
+Before we get started, make sure you have the following installed on your machine:
+- **Go** (1.16 or higher)
+- **Keploy CLI**
+
+<Callout type="info" title="Installing Keploy CLI">
+If you haven't installed Keploy yet, you can do so quickly via terminal:
+```bash
+curl --silent -O -L https://keploy.io/install.sh && source install.sh
+```
+</Callout>
+
+---
+
+## 2. Setting Up the Sample Application
+
+Let's build a quick Go HTTP server. Create a new directory and initialize a go module:
+
+```bash
+mkdir keploy-go-sample && cd keploy-go-sample
+go mod init keploy-go-sample
+```
+
+Create a `main.go` file with the following simple API endpoint:
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+type Response struct {
+	Message string `json:"message"`
+	Status  string `json:"status"`
+}
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Response{
+		Message: "Hello from Keploy!",
+		Status:  "success",
+	})
+}
+
+func main() {
+	http.HandleFunc("/api/hello", helloHandler)
+	http.ListenAndServe(":8080", nil)
+}
+```
+
+<Callout type="warning" title="Graceful Shutdown">
+For Keploy to reliably dump the recorded tests and coverage (if applicable), it expects the application to gracefully handle `SIGINT` and `SIGTERM`. Our simple example relies on standard library defaults, but for production apps, always implement graceful shutdowns!
+</Callout>
+
+---
+
+## 3. Recording Traffic with Keploy
+
+Instead of manually writing tests, we run our application using Keploy's **record** mode. Keploy acts as a proxy, observing and storing all incoming and outgoing API traffic.
+
+To start recording, prepend your run command with `keploy record -c`:
+
+```bash
+keploy record -c "go run main.go"
+```
+
+Once the server is running, make a few requests to your endpoint. You can use curl, Postman, or your browser:
+
+```bash
+curl http://localhost:8080/api/hello
+```
+
+### What happens behind the scenes?
+As you make requests, Keploy captures the HTTP method, headers, request bodies, and the corresponding responses. It then saves these interactions locally as YAML files (typically in a `keploy` folder in your project root).
+
+<Callout type="success" title="A-ha Moment!">
+This is where Keploy truly shines. By simply running your app and using it normally, you've just generated a complete regression test suite! No mock setup, no asserting JSON paths manually.
+</Callout>
+
+---
+
+## 4. Replaying and Testing
+
+Now that we have recorded our traffic, we can stop the server (Ctrl+C). 
+
+Let's see if our application still passes the recorded tests. We will use the `keploy test` command:
+
+```bash
+keploy test -c "go run main.go" --delay 10
+```
+
+*The `--delay` flag gives our server a bit of time to start before Keploy begins firing the recorded requests.*
+
+Keploy will start your application, automatically send the exact requests it captured earlier, and compare the new responses against the recorded ones. You'll see an output summarizing passed and failed tests.
+
+---
+
+## 5. Why Keploy?
+
+If you're a Go developer, you know the pain of writing extensive boilerplate for table-driven tests and setting up database mocks (e.g., using `sqlmock` or spinning up Docker containers for integration tests). 
+
+Keploy abstracts this away:
+- **Time Savings**: Instantly generate test cases from actual usage.
+- **Accurate Mocks**: Database calls and external API requests made during recording are also intercepted and mocked for future replays.
+- **High Coverage**: Because you are testing exact, real-world user flows, coverage tends to be exceptionally high and realistic.
+
+<Callout type="info" title="Next Steps">
+Try modifying the JSON response in `main.go`. Run `keploy test` again and watch it catch the discrepancy (a failed test due to the mismatched response body). This proves Keploy is actively guarding against accidental regressions!
+</Callout>
+
+Happy testing!
